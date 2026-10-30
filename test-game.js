@@ -20,4 +20,24 @@ for (let i = 0; i < 30; i++) season = play(season, 50, 2, 5);
 assert.equal(season.history.length, 30);
 assert.throws(() => play(season, 50, 2, 5), /complete/);
 assert.throws(() => play({ ...start, cash: 4 }, 0, 2, 0), /exceeds/);
+const game = require('./game.js');
+assert.equal(game.varieties.length, 4);
+assert.throws(() => play(start, 1, 2, 0, 'unknown'), /variety/);
+for (const cookie of game.varieties) {
+  const result = play(start, 40, cookie.suggestedPrice, 5, cookie.id);
+  const row = result.history[0];
+  assert.equal(row.variety, cookie.id);
+  assert.equal(row.ingredients, Math.round(40 * cookie.cost * 100) / 100);
+  assert.equal(row.revenue, Math.round(row.sold * cookie.suggestedPrice * 100) / 100);
+  assert.equal(result.selectedVariety, cookie.id);
+  // Every variety has the same demand at its own suggested price.
+  assert.equal(row.demand, next.history[0].demand);
+}
+assert.ok(game.ingredientCost(start, 'oatmeal') < game.ingredientCost(start, 'double-chocolate'));
+const originalEffects = game.effects;
+game.effects = () => ({ ingredientMultiplier: .8, demandMultiplier: 1.25, advertisingMultiplier: 2 });
+const upgraded = play(start, 40, 2, 5);
+assert.equal(upgraded.history[0].ingredients, 16);
+assert.ok(upgraded.history[0].demand > next.history[0].demand);
+game.effects = originalEffects;
 console.log('Simulation checks passed: finances, validation, demand, bankruptcy, and 30-day limit.');
