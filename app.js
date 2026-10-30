@@ -51,6 +51,11 @@ const upgradeUI = CookieGame.mountUpgrades($('upgrades'), {
 });
 function selectedVariety() { return CookieGame.varieties.find(item => item.id === $('variety').value) || CookieGame.varieties[0]; }
 function varietyName(id) { return (CookieGame.varieties.find(item => item.id === id) || CookieGame.varieties[0]).name; }
+function refreshVarieties() {
+  const selected = $('variety').value || state.selectedVariety || 'classic';
+  $('variety').innerHTML = CookieGame.varieties.map(item => '<option value="' + item.id + '">' + item.name + ' · ' + money(CookieGame.ingredientCost(state, item.id)) + ' to bake</option>').join('');
+  $('variety').value = CookieGame.varieties.some(item => item.id === selected) ? selected : 'classic';
+}
 function budget() {
   const selected = selectedVariety();
   const unitCost = CookieGame.ingredientCost(state, selected.id);
@@ -61,6 +66,7 @@ function budget() {
   $('ingredients').textContent = money(ingredients); $('ad-cost').textContent = money(ads); $('investment').textContent = money(ingredients + ads + 5);
 }
 function render() {
+  refreshVarieties();
   const count = state.history.length, complete = count === 30, broke = state.cash < 5;
   $('day-label').textContent = complete ? '30 OF 30 DAYS COMPLETE' : `DAY ${count + 1} OF 30`;
   $('day').textContent = complete ? 'Season complete!' : count === 0 ? 'Opening day' : `${30 - count} days to grow`;
@@ -84,9 +90,11 @@ function render() {
   budget();
   upgradeUI.render();
 }
-$('variety').innerHTML = CookieGame.varieties.map(item => '<option value="' + item.id + '">' + item.name + ' · ' + money(item.cost) + ' to bake</option>').join('');
+refreshVarieties();
 $('variety').value = CookieGame.varieties.some(item => item.id === state.selectedVariety) ? state.selectedVariety : 'classic';
-if (state.selectedVariety) $('price').value = selectedVariety().suggestedPrice.toFixed(2);
+const lastBatch = state.history.at(-1);
+if (lastBatch && Number.isFinite(lastBatch.price) && lastBatch.price >= .25 && lastBatch.price <= 20) $('price').value = lastBatch.price.toFixed(2);
+else if (state.selectedVariety) $('price').value = selectedVariety().suggestedPrice.toFixed(2);
 $('variety').addEventListener('change', () => { $('price').value = selectedVariety().suggestedPrice.toFixed(2); budget(); });
 $('plan').addEventListener('input', budget);
 $('plan').addEventListener('submit', event => { event.preventDefault(); if (rushing) return; try { state = CookieGame.play(state, Number($('quantity').value), Number($('price').value), Number($('ads').value), $('variety').value); $('error').textContent = ''; save(); render(); animateCustomers(state.history.at(-1)); } catch (error) { $('error').textContent = error.message; } });

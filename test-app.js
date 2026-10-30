@@ -27,6 +27,10 @@ assert.equal(mounted.getState().cash, 100);
 mounted.onPurchase('oven');
 assert.equal(saved.cash, 40);
 assert.equal($('unit-cost').textContent, '$0.40 per cookie');
+for (const variety of game.varieties) {
+  const cost = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(game.ingredientCost(saved, variety.id));
+  assert.ok($('variety').innerHTML.includes(`${variety.name} · ${cost} to bake`));
+}
 $('variety').value = 'oatmeal'; $('variety').handlers.change();
 assert.equal($('price').value, '1.75');
 $('plan').handlers.submit({ preventDefault() {} });
@@ -46,4 +50,17 @@ assert.equal(saved.history.length, 0);
 assert.equal(game.hasUpgrade(saved, 'oven'), false);
 assert.equal($('variety').value, 'classic');
 assert.equal(timer, null);
+assert.ok($('variety').innerHTML.includes('Chocolate Chip · $0.50 to bake'));
+// Reload a completed batch with a custom price and upgrades, using disposable storage.
+const prior = game.play(game.purchaseUpgrade({ ...game.fresh(), seed: 42 }, 'oven'), 40, 3.50, 5, 'classic');
+vm.runInNewContext(fs.readFileSync('app.js', 'utf8'), {
+  ...context, localStorage: { getItem: () => JSON.stringify(prior), setItem() {} }
+});
+assert.equal($('price').value, '3.50', 'Reload must restore the last used custom price');
+assert.equal($('variety').value, 'classic');
+assert.ok($('variety').innerHTML.includes('Chocolate Chip · $0.40 to bake'));
+assert.equal(mounted.getState().cash, prior.cash);
+assert.equal(mounted.getState().history.length, 1);
+$('variety').value = 'lemon'; $('variety').handlers.change();
+assert.equal($('price').value, '2.25', 'Changing variety still suggests its default price');
 console.log('App wiring checks passed: upgrades, variety budget, day submission, animation guard, skip, and reset.');
