@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mercy's Cookie Shop Tycoon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header><a class="brand" href="index.html"><span class="logo">●</span> MERCY’S <span class="brand-sub">COOKIE SHOP</span></a><button id="restart" class="quiet">New game ↻</button></header>
+    <section class="intro"><div><p class="eyebrow">A LITTLE DOUGH. A BIG DREAM.</p><h1>Build your sweet empire.</h1><p>One oven, $100, and 30 days to make your mark.</p></div><div class="cookie-art" aria-hidden="true"><div class="cookie"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>freshly baked ambition</span></div></section>
+    <section class="stats" aria-label="Shop overview"><article><span id="day-label">DAY 1 OF 30</span><strong id="day">Opening day</strong><div class="track"><div id="progress"></div></div></article><article><span>CASH IN THE TILL</span><strong id="cash">$100.00</strong><small>Make every crumb count.</small></article><article><span>TOTAL PROFIT</span><strong id="total-profit">$0.00</strong><small id="sold-total">0 cookies sold so far</small></article></section>
+    <section class="panel shop-scene" aria-label="Animated cookie shop">
+      <div class="section-head"><div><p class="eyebrow">A LITTLE NEIGHBORHOOD MAGIC</p><h2 id="shop-status" role="status">Ready for the morning rush</h2></div><button id="skip-rush" class="quiet" hidden>Skip animation</button></div>
+      <div class="street" aria-hidden="true"><div class="scene-sun">☀</div><div class="storefront"><div class="shop-sign">MERCY’S COOKIES</div><div class="awning"></div><div class="shop-window">🍪 🍪 🍪</div><div class="shop-door"></div></div><div class="customer-lane" id="customers"></div></div>
+      <p class="scene-caption" id="shop-caption">Your first customers are just around the corner.</p>
+    </section>
+    <div class="workspace"><section class="panel planner"><div class="section-head"><div><p class="eyebrow">THE DAILY RECIPE</p><h2 id="plan-title">Plan your day</h2></div><span class="pill" id="weekday">MONDAY</span></div><div class="forecast"><span aria-hidden="true">☀</span><div><b id="weather">A lovely day for cookies</b><p id="forecast">Normal foot traffic expected.</p></div></div>
+      <form id="plan"><label for="quantity">Cookies to bake <small>$0.50 per cookie</small></label><div class="input-wrap"><input id="quantity" type="number" min="0" max="10000" step="1" value="40" required><span>cookies</span></div><label for="price">Price per cookie <small>Sweet spot: around $2</small></label><div class="input-wrap"><span>$</span><input id="price" type="number" min="0.25" max="20" step="0.05" value="2.00" required></div><label for="ads">Advertising budget <small>Bring more cookie lovers in</small></label><div class="input-wrap"><span>$</span><input id="ads" type="number" min="0" max="10000" step="0.50" value="5.00" required></div><div class="costs"><div><span>Ingredients</span><b id="ingredients">$20.00</b></div><div><span>Advertising</span><b id="ad-cost">$5.00</b></div><div><span>Daily shop expenses</span><b>$5.00</b></div><div class="cost-total"><span>Today’s investment</span><b id="investment">$30.00</b></div></div><p id="error" role="alert"></p><button id="bake" class="primary" type="submit">Open shop & bake <span>→</span></button><p class="hint">Unsold cookies don’t keep overnight. Bake wisely!</p></form>
+    </section><section class="panel results" aria-live="polite"><p class="eyebrow">THE CLOSING COUNT</p><h2 id="result-title">Your story starts here.</h2><div id="empty"><div class="empty-cookie" aria-hidden="true">🍪</div><h3>Good things take a little dough.</h3><p>Set your recipe for success, then open the shop.<br>Your daily results will appear here.</p><div class="tip"><b>A pinch of advice</b><p>Higher prices mean fewer buyers. Advertising boosts demand, but don’t spend all your dough at once.</p></div></div><div id="report" hidden></div></section></div>
+    <section class="panel ledger"><div class="section-head"><div><p class="eyebrow">FRESH FROM THE BOOKS</p><h2>Shop journal</h2></div><span id="journal-count">0 days in business</span></div><div class="table-wrap"><table><thead><tr><th>Day</th><th>Baked / sold</th><th>Revenue</th><th>Expenses</th><th>Profit</th><th>Cash</th></tr></thead><tbody id="history"><tr><td colspan="6" class="empty-row">A fresh page for your cookie shop adventure.</td></tr></tbody></table></div></section>
+    <footer>MADE WITH BUTTER & BIG IDEAS <span>Mercy’s Cookie Shop Tycoon · Saved on this browser</span></footer>
+  </main><dialog id="reset-dialog"><h2>A fresh batch?</h2><p>This will replace your current shop with a new 30-day game.</p><div><button id="cancel-reset" class="quiet">Keep playing</button><button id="confirm-reset" class="primary">Start fresh</button></div></dialog>
+  <script src="game.js"></script><script src="app.js"></script>
+</body></html>
