@@ -26,6 +26,7 @@ function animateCustomers(entry) {
     return;
   }
   rushing = true;
+  upgradeUI.render();
   $('bake').disabled = true;
   $('bake').textContent = 'Customers are visiting…';
   $('skip-rush').hidden = false;
@@ -43,6 +44,11 @@ function animateCustomers(entry) {
 }
 try { const saved = JSON.parse(localStorage.getItem(key)); if (saved && Number.isFinite(saved.cash) && Number.isInteger(saved.seed) && Array.isArray(saved.history) && saved.history.length <= 30 && saved.history.every(r => ['day','quantity','sold','revenue','expenses','profit','cash'].every(k => Number.isFinite(r[k])))) state = saved; } catch {}
 function save() { try { localStorage.setItem(key, JSON.stringify(state)); } catch { document.querySelector('footer span').textContent = 'Browser storage unavailable · Keep this tab open to keep playing'; } }
+const upgradeUI = CookieGame.mountUpgrades($('upgrades'), {
+  getState: () => state,
+  isBusy: () => rushing,
+  onPurchase: id => { state = CookieGame.purchaseUpgrade(state, id); save(); render(); }
+});
 function selectedVariety() { return CookieGame.varieties.find(item => item.id === $('variety').value) || CookieGame.varieties[0]; }
 function varietyName(id) { return (CookieGame.varieties.find(item => item.id === id) || CookieGame.varieties[0]).name; }
 function budget() {
@@ -76,6 +82,7 @@ function render() {
     $('history').innerHTML = [...state.history].reverse().map(r => `<tr><td>${r.day.toString().padStart(2,'0')}</td><td>${varietyName(r.variety)}</td><td>${r.quantity} / <b>${r.sold}</b></td><td>${money(r.revenue)}</td><td>${money(r.expenses)}</td><td class="${r.profit < 0 ? 'negative' : 'positive'}">${money(r.profit)}</td><td>${money(r.cash)}</td></tr>`).join('');
   } else { $('empty').hidden = false; $('report').hidden = true; $('result-title').textContent = 'Your story starts here.'; $('history').innerHTML = '<tr><td colspan="7" class="empty-row">A fresh page for your cookie shop adventure.</td></tr>'; }
   budget();
+  upgradeUI.render();
 }
 $('variety').innerHTML = CookieGame.varieties.map(item => '<option value="' + item.id + '">' + item.name + ' · ' + money(item.cost) + ' to bake</option>').join('');
 $('variety').value = CookieGame.varieties.some(item => item.id === state.selectedVariety) ? state.selectedVariety : 'classic';
@@ -86,5 +93,5 @@ $('plan').addEventListener('submit', event => { event.preventDefault(); if (rush
 $('skip-rush').onclick = finishRush;
 $('restart').onclick = () => $('reset-dialog').showModal();
 $('cancel-reset').onclick = () => $('reset-dialog').close();
-$('confirm-reset').onclick = () => { state = CookieGame.fresh(); finishRush(); $('variety').value = 'classic'; $('quantity').value = 40; $('price').value = '2.00'; $('ads').value = '5.00'; $('error').textContent = ''; save(); render(); $('reset-dialog').close(); };
+$('confirm-reset').onclick = () => { state = CookieGame.fresh(); upgradeUI.clearMessage(); finishRush(); $('variety').value = 'classic'; $('quantity').value = 40; $('price').value = '2.00'; $('ads').value = '5.00'; $('error').textContent = ''; save(); render(); $('reset-dialog').close(); };
 render();
